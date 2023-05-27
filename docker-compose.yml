@@ -1,0 +1,42 @@
+version: "3.9"
+services:
+  trivia-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: >
+      "python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    volumes:
+      - type: bind
+        source: .
+        target: /app
+
+  db:
+    image: mysql:8.0
+    container_name: db
+    command: mysqld --default-authentication-plugin=mysql_native_password
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: phpmyadmin-trivia
+    links:
+      - db
+    environment:
+      PMA_ARBITRARY: 1
+    restart: always
+    ports:
+      - 8081:80
+
+volumes:
+  dbdata:

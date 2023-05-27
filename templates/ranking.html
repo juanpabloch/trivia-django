@@ -1,0 +1,16 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Ranking</h1>
+    <div>
+        <ol>
+            {% for player in ranking %}
+            <li>{{player}}</li>
+            {% endfor %}
+        </ol>
+    </div>
+
+    <a href="{% url 'home' %}">Volver</a>
+</div>
+{% endblock content %}

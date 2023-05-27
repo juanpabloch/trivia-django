@@ -1,0 +1,30 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<div class="container">
+    <h1>Resultados</h1>
+
+    {% if result %}
+
+        <p>Tuviste {{result}} respuestas correctas y respondiste en 
+            {% if time.0 > 0 %}
+                {{time.0}} minutos y {{time.1}} segundos
+            {% else %}
+                {{time.1}} segundos
+            {% endif %}
+        </p>
+
+    {% else %}
+
+        <p>{{error}}</p>
+
+    {% endif %}
+    
+    <div>
+        <a href="{% url 'home' %}">Volver a pagina principal</a>
+        <br>
+        <a href="#">Ver tabla de resultados</a>
+    </div>
+</div>
+{% endblock content %}

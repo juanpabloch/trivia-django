@@ -1,0 +1,28 @@
+{% extends 'game.html' %}
+
+{% block game_content %}
+
+    <form action="{% url 'questions_form' %}" method="post">
+        {% csrf_token %}
+        <div class="card-container">
+            {% comment %} {% for question in questions %} {% endcomment %}
+                <div class="card">
+                    <div class="card-header">
+                        {{question.question|safe}}
+                    </div>
+                    <div class="card-body">
+                        {% for answer in question.answers %}
+                        <div>
+                            <input type="radio" id="question" name="question_{{question.question_num}}" value="{{answer}}" required>
+                            <label for="huey">{{answer|safe}}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% comment %} {% endfor %} {% endcomment %}
+            <input class="btn send-questions" type="submit" value="Responder">
+        </div>
+    </form>        
+
+
+{% endblock game_content %}

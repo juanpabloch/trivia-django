@@ -1,0 +1,69 @@
+{% extends 'main.html' %}
+{% load static %}
+{% comment %} {% load static triviatags %} {% endcomment %}
+
+{% block content %}
+    <div class="container">
+        <h1>Preguntas</h1>
+        
+        <h2>Ranking: {{request.user.get_ranking}}</h2>
+        <h2>Puntos: {{request.user.points}}</h2>
+        
+        <div class="countdown-box">
+            <p>Start!</p>
+        </div>
+
+        <div class="title">
+            <h2>{{question.category}}</h2>
+        </div>
+        <form action="{% url 'questions_form' %}" method="post">
+            {% csrf_token %}
+
+            <div class="card-container hide">
+                <div class="card">
+                    <div class="card-header">
+                        {{question.question|safe}}
+                    </div>
+                    <div class="card-body">
+                        {% for answer in question.answers %}
+                        <div>
+                            <input type="radio" id="answer" name="answer" value="{{answer}}" required>
+                            <label for="huey">{{answer|safe}}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="bet-container">
+                <h3>Set your bet: </h3>
+                <div>
+                    <input type="radio" id="bet" name="bet" value="{{bet.5}}" required>
+                    <label>{{bet.5}}</label>
+                </div>
+                <div>
+                    <input type="radio" id="bet" name="bet" value="{{bet.10}}" required>
+                    <label>{{bet.10}}</label>
+                </div>
+                <div>
+                    <input type="radio" id="bet" name="bet" value="{{bet.20}}" required>
+                    <label>{{bet.20}}</label>
+                </div>
+                <div>
+                    <input type="radio" id="bet" name="bet" value="{{bet.30}}" required>
+                    <label>{{bet.30}}</label>
+                </div>
+            </div>
+            
+            <input class="btn send-questions hide" type="submit" value="Responder">
+        </form>
+
+        <a id="backBtn" href="{% url 'home' %}">SALIR</a>
+    </div>
+
+<script>
+    var url_home = "{% url 'home' %}"        
+</script>
+<script src="{% static 'js/game.js' %}"></script>
+
+{% endblock content %}

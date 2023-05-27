@@ -1,0 +1,19 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<h1>Login</h1>
+
+<div class="login">
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Entrar">
+    </form>
+</div>
+{% if error %}
+    <p>{{error}}</p>
+{% endif %}
+
+<p>No tienes una cuenta ingresa <a href="{% url 'register' %}">aqui</a></p>
+
+{% endblock content %}
