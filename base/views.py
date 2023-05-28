@@ -52,7 +52,6 @@ def register_view(request):
             user = form.save()
             user.set_password(user.password)
             user.save()
-            print("USER_register: ", user)
             return redirect('login')
             
     form = forms.RegisterForm()
@@ -80,6 +79,7 @@ def home(request):
 def game_view(request):
     flag = True
     bet = {}
+    print("PRE FETCH")
     while flag:
         question = trivia.get_question('https://opentdb.com/api.php')
         if question.get('question'):
@@ -87,7 +87,11 @@ def game_view(request):
             bet = trivia.get_bet_percentage(request.user.points)
             flag = False            
     
+    print("PRE TRADUCCION")
     question = triviatags.translate_(question)
+    
+    print("POST TRADUCCION")
+    
     context = {
         "question": question,
         "bet": bet,
@@ -97,16 +101,19 @@ def game_view(request):
    
 def questions_form(request):
     if request.method == "POST":
+        print("POST QUESTION")
         question = request.session.get('questions')
         user = request.user
-        
+        print("CORRECTION")
         result = trivia.is_correct(question, request.POST)
         user.add_answered()
         if result:
             user.add_points(int(request.POST.get('bet')))
             user.add_correctly()
+            print("RESULT: OK")
         else:   
             user.subtract_points(int(request.POST.get('bet')))
+            print("RESULT: NO!!!")
 
         return redirect('game_view')
 

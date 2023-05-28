@@ -5,6 +5,7 @@ window.addEventListener('load', function(e){
     const submitBtn = document.querySelector('input[type="submit"]')
     const betOptions = bet.querySelectorAll('input[type="radio"]')
     const backBtn = document.querySelector('#backBtn')
+    const loadingSection = document.querySelector('#loading')
 
     betOptions.forEach(option=>{
         option.addEventListener('change', (e)=>{
@@ -34,6 +35,10 @@ window.addEventListener('load', function(e){
       }
     }
 
+    submitBtn.addEventListener('click', (e)=>{
+        clearInterval(timerId)
+        loadingSection.classList.remove('hide')
+    })
 
     function wrongAnswer() {
         let bet = ''

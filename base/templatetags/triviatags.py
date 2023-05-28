@@ -12,9 +12,15 @@ def translate(string):
 
 @register.filter
 def translate_(question):
+    print("QUESTION: ", question)
     trans_question = {}
     trans_question['question'] = translated.translate(question['question'])
-    trans_question['answers'] = [translated.translate(answer) for answer in question['answers']]
+    
+    try:
+        trans_question['answers'] = [translated.translate(answer) for answer in question['answers']]
+    except:
+        trans_question['answers'] = [answer for answer in question['answers']]
+        
     trans_question['category'] = translated.translate(question['category'])
     return trans_question
 
