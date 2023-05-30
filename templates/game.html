@@ -1,5 +1,6 @@
 {% extends 'main.html' %}
 {% load static %}
+{% load triviatags %}
 
 {% block content %}
     <div class="container">
@@ -9,11 +10,11 @@
         <h2>Puntos: {{request.user.points}}</h2>
         
         <div class="countdown-box">
-            <p>Start!</p>
+            <h1>Start!</h1>
         </div>
 
         <div class="title">
-            <h2>{{question.category}}</h2>
+            <h2>{{question.category|translate}}</h2>
         </div>
         <form action="{% url 'questions_form' %}" method="post">
             {% csrf_token %}
@@ -21,13 +22,13 @@
             <div class="card-container hide">
                 <div class="card">
                     <div class="card-header">
-                        {{question.question|safe}}
+                        {{question.question|translate|safe}}
                     </div>
                     <div class="card-body">
                         {% for answer in question.answers %}
                         <div>
                             <input type="radio" id="answer" name="answer" value="{{answer}}" required>
-                            <label for="huey">{{answer|safe}}</label>
+                            <label for="huey">{{answer|translate|safe}}</label>
                         </div>
                         {% endfor %}
                     </div>
@@ -59,11 +60,16 @@
 
         <a id="backBtn" href="{% url 'home' %}">SALIR</a>
         
-        <h1 id='loading' class='hide'>JAJAJAJA</h1>
+        <div id="loading" class='hide'>
+            <h1>JAJAJAJA</h1>
+            <p>{{question.correct_answer}}</p>
+            <p id="result"></p>
+        </div>
     </div>
 
 <script>
-    var url_home = "{% url 'home' %}"        
+    var url_home = "{% url 'home' %}"  
+    var crtan = '{{question.correct_answer}}'  
 </script>
 <script src="{% static 'js/game.js' %}"></script>
 

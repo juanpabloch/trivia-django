@@ -87,11 +87,11 @@ def game_view(request):
             bet = trivia.get_bet_percentage(request.user.points)
             flag = False            
     
-    print("PRE TRADUCCION")
-    question = triviatags.translate_(question)
+    # print("PRE TRADUCCION")
+    # question = triviatags.translate_(question)
     
-    print("POST TRADUCCION")
-    
+    # print("POST TRADUCCION")
+    print("CORRECT: ", question)
     context = {
         "question": question,
         "bet": bet,

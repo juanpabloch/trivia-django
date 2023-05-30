@@ -20,7 +20,7 @@ window.addEventListener('load', function(e){
     })
 
     // TIMER
-    const countDown = document.querySelector('.countdown-box p')
+    const countDown = document.querySelector('.countdown-box h1')
     var timeLeft = 30;
     
     var timerId = setInterval(countdown, 1000);
@@ -36,8 +36,10 @@ window.addEventListener('load', function(e){
     }
 
     submitBtn.addEventListener('click', (e)=>{
+        submitBtn.setAttribute('disabled', '')
         clearInterval(timerId)
         loadingSection.classList.remove('hide')
+        document.querySelector('#result').textContent = document.querySelector('input[name="answer"]:checked').value == crtan ? 'CORRECTO' : 'INCORRECTO'
     })
 
     function wrongAnswer() {
