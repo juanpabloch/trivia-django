@@ -6,6 +6,7 @@ window.addEventListener('load', function(e){
     const betOptions = bet.querySelectorAll('input[type="radio"]')
     const backBtn = document.querySelector('#backBtn')
     const loadingSection = document.querySelector('#loading')
+    const form = document.querySelector('form')
 
     betOptions.forEach(option=>{
         option.addEventListener('change', (e)=>{
@@ -34,13 +35,6 @@ window.addEventListener('load', function(e){
         timeLeft--;
       }
     }
-
-    submitBtn.addEventListener('click', (e)=>{
-        submitBtn.setAttribute('disabled', '')
-        clearInterval(timerId)
-        loadingSection.classList.remove('hide')
-        document.querySelector('#result').textContent = document.querySelector('input[name="answer"]:checked').value == crtan ? 'CORRECTO' : 'INCORRECTO'
-    })
 
     function wrongAnswer() {
         let bet = ''

@@ -45,3 +45,10 @@ def get_total_time(start, end):
     result = divmod(difference.days * seconds_in_day + difference.seconds, 60)
     
     return result
+
+
+def score_redirect(request):
+    if request.user.points <= 0:
+        return True
+    
+    return False

@@ -52,6 +52,14 @@ body{
     display: none;
 }
 
+p.question{
+  font-size: 12px;
+}
+
+span.answer-eng{
+  font-size: 12px;
+}
+
 /* Loader */
 
 .info{
@@ -95,7 +103,7 @@ body{
   animation:animateC 2s linear infinite;
 }
 
-span{
+.ring span{
   display:block;
   position:absolute;
   top:calc(50% - 2px);
@@ -107,7 +115,7 @@ span{
   animation:animate 2s linear infinite;
 }
 
-span:before{
+.ring span:before{
   content:'';
   position:absolute;
   width:16px;
@@ -139,4 +147,32 @@ span:before{
   {
     transform:rotate(405deg);
   }
+}
+
+/* Result */
+.container-result{
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #3c3c3c82;
+}
+
+.result{
+  max-width: 500px;
+  margin: 0 auto;
+  border-radius: 10px;
+  background-color: #ebebeb;
+  padding: 80px 100px;
+}
+
+.container-result .correct{
+  border: 1px solid #6ab068;
+  color: #6ab068;
+}
+
+.container-result .incorrect{
+  border: 1px solid #ca4343;
+  color: #ca4343;
 }

@@ -13,7 +13,7 @@ import json
 
 # from base.services import fetch_data
 from base.services.fetch_data import FetchTriviaData
-from base.services.utils import get_results, get_total_points, get_total_time
+from base.services.utils import get_results, get_total_points, get_total_time, score_redirect
 from base import trivia
 from base.templatetags import triviatags
 
@@ -77,9 +77,12 @@ def home(request):
 
 
 def game_view(request):
+    if score_redirect(request):
+        return redirect('home')
+    
     flag = True
     bet = {}
-    print("PRE FETCH")
+
     while flag:
         question = trivia.get_question('https://opentdb.com/api.php')
         if question.get('question'):
@@ -87,11 +90,6 @@ def game_view(request):
             bet = trivia.get_bet_percentage(request.user.points)
             flag = False            
     
-    # print("PRE TRADUCCION")
-    # question = triviatags.translate_(question)
-    
-    # print("POST TRADUCCION")
-    print("CORRECT: ", question)
     context = {
         "question": question,
         "bet": bet,
@@ -110,12 +108,15 @@ def questions_form(request):
         if result:
             user.add_points(int(request.POST.get('bet')))
             user.add_correctly()
-            print("RESULT: OK")
         else:   
             user.subtract_points(int(request.POST.get('bet')))
-            print("RESULT: NO!!!")
 
-        return redirect('game_view')
+        context = {
+            "result": result
+        }
+        return render(request, 'result.html', context)
+    
+    return redirect('home')
 
 
 def players_rankings(request):
@@ -140,7 +141,8 @@ def wrong_answer(request):
         except Exception as err:
             print(err)
             return HttpResponse(status=500)
-        
+    
+    return redirect('home')    
         
 """
     USER:  [

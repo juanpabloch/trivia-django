@@ -23,12 +23,13 @@
                 <div class="card">
                     <div class="card-header">
                         {{question.question|translate|safe}}
+                        <p class="question">{{question.question|safe}}</p>
                     </div>
                     <div class="card-body">
                         {% for answer in question.answers %}
                         <div>
                             <input type="radio" id="answer" name="answer" value="{{answer}}" required>
-                            <label for="huey">{{answer|translate|safe}}</label>
+                            <label for="huey">{{answer|translate|safe}} - <span class="answer-eng">({{answer|safe}})</span></label>
                         </div>
                         {% endfor %}
                     </div>
@@ -37,21 +38,17 @@
 
             <div class="bet-container">
                 <h3>Set your bet: </h3>
+                {% for key, value in bet.items %}
+                    {% if value > 0 %}
+                        <div>
+                            <input type="radio" id="bet" name="bet" value="{{value}}" required>
+                            <label>{{value}}</label>
+                        </div>
+                    {% endif %}
+                {% endfor %}
                 <div>
-                    <input type="radio" id="bet" name="bet" value="{{bet.5}}" required>
-                    <label>{{bet.5}}</label>
-                </div>
-                <div>
-                    <input type="radio" id="bet" name="bet" value="{{bet.10}}" required>
-                    <label>{{bet.10}}</label>
-                </div>
-                <div>
-                    <input type="radio" id="bet" name="bet" value="{{bet.20}}" required>
-                    <label>{{bet.20}}</label>
-                </div>
-                <div>
-                    <input type="radio" id="bet" name="bet" value="{{bet.30}}" required>
-                    <label>{{bet.30}}</label>
+                    <input type="radio" id="bet" name="bet" value="{{request.user.points}}" required>
+                    <label>All-in</label>
                 </div>
             </div>
             
@@ -59,17 +56,10 @@
         </form>
 
         <a id="backBtn" href="{% url 'home' %}">SALIR</a>
-        
-        <div id="loading" class='hide'>
-            <h1>JAJAJAJA</h1>
-            <p>{{question.correct_answer}}</p>
-            <p id="result"></p>
-        </div>
     </div>
 
 <script>
-    var url_home = "{% url 'home' %}"  
-    var crtan = '{{question.correct_answer}}'  
+    var url_home = "{% url 'home' %}"
 </script>
 <script src="{% static 'js/game.js' %}"></script>
 

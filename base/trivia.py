@@ -44,9 +44,8 @@ def is_correct(question, post):
 
 def get_bet_percentage(points):
     bet = {
-        "5": int((points*5)/100),
         "10": int((points*10)/100),
-        "20": int((points*20)/100),
         "30": int((points*30)/100),
+        "50": int((points*50)/100),
     }
     return bet

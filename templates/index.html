@@ -32,7 +32,11 @@
         </div>
         <a href="{% url 'players_rankings' %}">Complete ranking</a>
         
-        <a id="play" href="{% url 'game_view' %}">Empezar</a>
+        {% if request.user.points == 0 %}
+            <a href="#">Pedir puntos</a>
+        {% else %}
+            <a id="play" href="{% url 'game_view' %}">Empezar</a>
+        {% endif %}
 </div>
 
 <div id="loading" class="hide">
@@ -44,7 +48,8 @@
     </div>
     
 
-    <div class="ring">Loading
+    <div class="ring">
+        Loading
         <span></span>
     </div>
 
