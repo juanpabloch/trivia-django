@@ -3,7 +3,7 @@
 {% load triviatags %}
 
 {% block content %}
-    <div class="container">
+    <div class="container question-container">
         <h1>Preguntas</h1>
         
         <h2>Ranking: {{request.user.get_ranking}}</h2>
@@ -16,7 +16,8 @@
         <div class="title">
             <h2>{{question.category|translate}}</h2>
         </div>
-        <form action="{% url 'questions_form' %}" method="post">
+        {% comment %} <form action="{% url 'questions_form' %}" method="post"> {% endcomment %}
+        <form action="" method="post">
             {% csrf_token %}
 
             <div class="card-container hide">
@@ -58,9 +59,18 @@
         <a id="backBtn" href="{% url 'home' %}">SALIR</a>
     </div>
 
+    <div class="container result-container">
+        <div class="result correct">
+            <h1>¡Correcto!</h1>
+        </div>
+
+        <div class="result incorrect">
+            <h1>¡Incorrecto!</h1>
+        </div>
+    </div>
+
 <script>
     var url_home = "{% url 'home' %}"
 </script>
 <script src="{% static 'js/game.js' %}"></script>
-
 {% endblock content %}

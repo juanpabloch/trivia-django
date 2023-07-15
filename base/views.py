@@ -6,6 +6,7 @@ from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse, JsonResponse
+from django.core.exceptions import EmptyResultSet
 
 from datetime import datetime
 import ast
@@ -77,32 +78,16 @@ def home(request):
 
 
 def game_view(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
     if score_redirect(request):
         return redirect('home')
     
-    flag = True
-    bet = {}
-
-    while flag:
-        question = trivia.get_question('https://opentdb.com/api.php')
-        if question.get('question'):
-            request.session['questions'] = question
-            bet = trivia.get_bet_percentage(request.user.points)
-            flag = False            
-    
-    context = {
-        "question": question,
-        "bet": bet,
-    }
-    return render(request, 'game.html', context)      
-   
-   
-def questions_form(request):
     if request.method == "POST":
-        print("POST QUESTION")
         question = request.session.get('questions')
         user = request.user
-        print("CORRECTION")
+        
         result = trivia.is_correct(question, request.POST)
         user.add_answered()
         if result:
@@ -111,12 +96,44 @@ def questions_form(request):
         else:   
             user.subtract_points(int(request.POST.get('bet')))
 
-        context = {
-            "result": result
-        }
-        return render(request, 'result.html', context)
+    question = {}
+
+    while not question.get('question'):
+        try:
+            question = trivia.get_question('https://opentdb.com/api.php') 
+        except (request.HTTPError, request.ConnectionError):
+            continue
+        
+    if not question:
+        raise EmptyResultSet("No question found, please try again later")
     
-    return redirect('home')
+    request.session['questions'] = question
+    bet = trivia.get_bet_percentage(request.user.points)
+        
+    context = {
+        "question": question,
+        "bet": bet,
+    }
+    return render(request, 'game.html', context)      
+   
+   
+def questions_form(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
+    result = ''
+    
+    if request.method == 'POST':
+        answer = request.POST.get("answer")
+        correct = request.session.get('questions')
+        print(correct['answers'])
+        print(f"answer: {answer} | correct: {correct['correct_answer']}")
+        if answer == correct["correct_answer"]:
+            result = 'correct'
+        else:
+            result = 'incorrect'
+    
+    return HttpResponse(json.dumps({'result': result}), content_type="application/json", status=200)
 
 
 def players_rankings(request):

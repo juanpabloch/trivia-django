@@ -1,5 +1,4 @@
 window.addEventListener('load', function(e){
-
     const question = document.querySelector(".card-container")
     const bet = document.querySelector(".bet-container")
     const submitBtn = document.querySelector('input[type="submit"]')
@@ -19,6 +18,43 @@ window.addEventListener('load', function(e){
             backBtn.classList.add('hide')
         })
     })
+
+
+    submitBtn.addEventListener('click', (e)=>{
+        clearTimeout(timerId);
+        e.preventDefault()
+        const answer = this.document.querySelector('input[name="answer"]:checked').value;
+        const token = document.querySelector('input[name="csrfmiddlewaretoken"]').value
+        var formData = new FormData();
+        formData.append("answer", answer)
+        // crear codigo para cuando se 
+        $.ajax({
+            type:"POST",
+            url:"/questions_form/",
+            processData: false,
+            contentType: false,
+            headers:{'X-CSRFToken': token},
+            data: formData,
+            complete: function(data){
+                if(typeof(data.status) != 'undefined'){
+                    if(data.status == 200){
+                        if(data.responseJSON.result === 'correct'){
+                            console.log("BUENISIMO!")
+                        }else{
+                            console.log("MALISIMO!")
+                        }
+                    } else {
+                        console.log("Error");
+                    }
+                } else {
+                    console.log("response.status is undefined");
+                }
+            }
+        })
+
+        form.submit()
+    })
+
 
     // TIMER
     const countDown = document.querySelector('.countdown-box h1')

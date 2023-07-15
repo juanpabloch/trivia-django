@@ -32,7 +32,7 @@
         </div>
         <a href="{% url 'players_rankings' %}">Complete ranking</a>
         
-        {% if request.user.points == 0 %}
+        {% if request.user.points <= 0 %}
             <a href="#">Pedir puntos</a>
         {% else %}
             <a id="play" href="{% url 'game_view' %}">Empezar</a>
