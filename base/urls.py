@@ -12,5 +12,6 @@ urlpatterns = [
     path('questions_form/', login_required(views.questions_form, login_url='login'), name='questions_form'),
     path('ranking/', login_required(views.players_rankings, login_url='login'), name='players_rankings'),
     path('wrong/', login_required(views.wrong_answer, login_url='login'), name='wrong_answer'),
-    path('get_points/', login_required(views.get_points, login_url='login'), name='get_points'),
+    path('get_points_request/', login_required(views.get_points_request, login_url='login'), name='get_points_request'),
+    path('redeem_points/', views.redeem_points, name='redeem_points'),
 ]

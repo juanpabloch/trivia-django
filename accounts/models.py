@@ -45,6 +45,8 @@ class CustomUser(AbstractUser):
     register = models.DateTimeField(auto_now_add=True)
     update = models.DateTimeField(auto_now=True)
     last_login = models.DateTimeField(null=True)
+    request_points_key = models.CharField(max_length=255, null=True, blank=True)
+    request_points_requested = models.CharField(max_length=255, null=True, blank=True)
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

@@ -15,6 +15,7 @@ from trivia import settings
 from email.mime.text import MIMEText
 import ssl
 import smtplib
+import uuid
 
 from datetime import datetime
 import ast
@@ -188,11 +189,19 @@ def wrong_answer(request):
     ]
 """
 
-def get_points(request):
+def get_points_request(request):
     if request.method == 'POST':
-        
-        content="""
+        user = models.CustomUser.objects.filter(id=request.user.id).first()
+        token = str(uuid.uuid4())
+        requested = datetime.now()
+        user.request_points_key = token
+        user.request_points_requested = str(requested)
+        user.save()
+        url = request.get_host()
+        # TODO: armar una clase
+        content=f"""
         Hola aca te mando un link para conseguir mas puntos!
+        {url}/redeem_points/?key={user.request_points_key}
         """
 
         subject= "Hola aca tenemos mas puntos para vos!"
@@ -220,7 +229,19 @@ def get_points(request):
         
     return redirect('home')    
 
-# TODO: sistema de email para enviar un email para pedir recarga de puntos falta enviar token
+
+def redeem_points(request):
+    if request.GET.get('key'):
+        user = models.CustomUser.objects.filter(request_points_key=request.GET.get('key'))
+        if user:
+            print("USER: ", user)
+            user.update(points=500)
+    
+    context = {
+    }
+    return render(request, 'redeem_points.html', context)
+
+# TODO: sistema de email para enviar un email para pedir recarga de puntos | falta ver fecha caducidad del token y cuantas veces lo puedo pedir o esperar para pedir
 # TODO: crear sistema para ver si un user esta online
 # TODO: implementar desafio, django channels juego online
 # TODO: mensajeria, notificaciones

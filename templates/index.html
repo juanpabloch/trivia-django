@@ -33,7 +33,7 @@
         <a href="{% url 'players_rankings' %}">Complete ranking</a>
         
         {% if request.user.points <= 0 %}
-            <form action="{% url 'get_points' %}" method="post">
+            <form action="{% url 'get_points_request' %}" method="post">
                 {% csrf_token %}
                 <input type="submit" value="Pedir puntos">
             </form>
