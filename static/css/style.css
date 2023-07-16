@@ -48,10 +48,6 @@ body{
     margin: 50px auto;
 }
 
-.hide{
-    display: none;
-}
-
 p.question{
   font-size: 12px;
 }
@@ -151,8 +147,11 @@ span.answer-eng{
 
 /* Result */
 .container-result{
+  position: absolute;
   width: 100%;
   height: 100vh;
+  top: 0;
+  left: 0;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -175,4 +174,14 @@ span.answer-eng{
 .container-result .incorrect{
   border: 1px solid #ca4343;
   color: #ca4343;
+}
+
+.container-result .incorrect p{
+  color: #000000;
+}
+
+
+/* HIDE */
+.hide{
+  display: none;
 }

@@ -59,13 +59,16 @@
         <a id="backBtn" href="{% url 'home' %}">SALIR</a>
     </div>
 
-    <div class="container result-container">
-        <div class="result correct">
+    <div class="container-result hide">
+        <div class="result correct hide">
             <h1>¡Correcto!</h1>
         </div>
 
-        <div class="result incorrect">
+        <div class="result incorrect hide">
             <h1>¡Incorrecto!</h1>
+            <p>the correct answer is:</p>
+            <p class="correct_a"></p>
+            <p class="correct_a_trans"></p>
         </div>
     </div>
 

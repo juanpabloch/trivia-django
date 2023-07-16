@@ -6,7 +6,15 @@ from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse, JsonResponse
+from django.contrib import messages
 from django.core.exceptions import EmptyResultSet
+
+from django.core.mail import EmailMessage, get_connection
+from trivia import settings
+
+from email.mime.text import MIMEText
+import ssl
+import smtplib
 
 from datetime import datetime
 import ast
@@ -16,7 +24,7 @@ import json
 from base.services.fetch_data import FetchTriviaData
 from base.services.utils import get_results, get_total_points, get_total_time, score_redirect
 from base import trivia
-from base.templatetags import triviatags
+from base.templatetags.triviatags import translate 
 
 UserModel = get_user_model()
 
@@ -133,7 +141,8 @@ def questions_form(request):
         else:
             result = 'incorrect'
     
-    return HttpResponse(json.dumps({'result': result}), content_type="application/json", status=200)
+    # return HttpResponse(json.dumps({'result': result, "correct_a": correct["correct_answer"]}), content_type="application/json", status=200)
+    return JsonResponse({'result': result, "correct_a": correct["correct_answer"], "correct_a_trans": translate(correct["correct_answer"])})
 
 
 def players_rankings(request):
@@ -178,3 +187,40 @@ def wrong_answer(request):
         'username', 'username_validator', 'validate_unique'
     ]
 """
+
+def get_points(request):
+    if request.method == 'POST':
+        
+        content="""
+        Hola aca te mando un link para conseguir mas puntos!
+        """
+
+        subject= "Hola aca tenemos mas puntos para vos!"
+        
+        # typical values for text_subtype are plain, html, xml
+        text_subtype = 'plain'
+        msg = MIMEText(content, text_subtype)
+        msg['Subject'] =       subject
+        msg['From'] = settings.EMAIL_HOST_USER
+        context = ssl.create_default_context()
+        
+        try:
+            with smtplib.SMTP_SSL(settings.EMAIL_HOST, settings.EMAIL_PORT, context=context) as smtp:
+                smtp.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
+                smtp.sendmail(
+                    settings.EMAIL_HOST_USER,
+                    ["juanpablochoter@gmail.com"], 
+                    msg.as_string()
+                )
+            messages.success(request, "Te enviamos un email con un link para recibir los puntos!")
+        except Exception as e:
+            print(e)
+            messages.error(request, "Error al enviar el email")
+        
+        
+    return redirect('home')    
+
+# TODO: sistema de email para enviar un email para pedir recarga de puntos falta enviar token
+# TODO: crear sistema para ver si un user esta online
+# TODO: implementar desafio, django channels juego online
+# TODO: mensajeria, notificaciones

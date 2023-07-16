@@ -33,9 +33,29 @@
         <a href="{% url 'players_rankings' %}">Complete ranking</a>
         
         {% if request.user.points <= 0 %}
-            <a href="#">Pedir puntos</a>
+            <form action="{% url 'get_points' %}" method="post">
+                {% csrf_token %}
+                <input type="submit" value="Pedir puntos">
+            </form>
         {% else %}
             <a id="play" href="{% url 'game_view' %}">Empezar</a>
+        {% endif %}
+
+        {% comment %} mensajes {% endcomment %}
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{message}}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% else %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{message}}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
+            {% endfor %}
         {% endif %}
 </div>
 
@@ -54,6 +74,7 @@
     </div>
 
 </div>
+
 <script src="{% static 'js/index.js' %}"></script>
 {% endblock content %}
     

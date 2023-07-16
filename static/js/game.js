@@ -7,6 +7,10 @@ window.addEventListener('load', function(e){
     const loadingSection = document.querySelector('#loading')
     const form = document.querySelector('form')
 
+    const containerResult = this.document.querySelector('.container-result')
+    const correctCard = this.document.querySelector('.correct')
+    const incorrectCard = this.document.querySelector('.incorrect')
+
     betOptions.forEach(option=>{
         option.addEventListener('change', (e)=>{
             question.classList.remove('hide')
@@ -38,21 +42,24 @@ window.addEventListener('load', function(e){
             complete: function(data){
                 if(typeof(data.status) != 'undefined'){
                     if(data.status == 200){
+                        containerResult.classList.remove('hide')
                         if(data.responseJSON.result === 'correct'){
-                            console.log("BUENISIMO!")
+                            correctCard.classList.remove('hide')
                         }else{
-                            console.log("MALISIMO!")
+                            incorrectCard.classList.remove('hide')
+                            incorrectCard.querySelector('.correct_a').textContent = data.responseJSON.correct_a
+                            incorrectCard.querySelector('.correct_a_trans').textContent = data.responseJSON.correct_a_trans
                         }
+                        form.submit()
                     } else {
                         console.log("Error");
+                        window.location.replace(url_home);
                     }
                 } else {
                     console.log("response.status is undefined");
                 }
             }
         })
-
-        form.submit()
     })
 
 
