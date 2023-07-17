@@ -14,4 +14,6 @@ urlpatterns = [
     path('wrong/', login_required(views.wrong_answer, login_url='login'), name='wrong_answer'),
     path('get_points_request/', login_required(views.get_points_request, login_url='login'), name='get_points_request'),
     path('redeem_points/', views.redeem_points, name='redeem_points'),
+    path('chat-room/', views.chat_room, name='chat_room'),
+    path('chat-room/<str:room_name>', views.room, name='room'),
 ]

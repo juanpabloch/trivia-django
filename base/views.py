@@ -234,14 +234,69 @@ def redeem_points(request):
     if request.GET.get('key'):
         user = models.CustomUser.objects.filter(request_points_key=request.GET.get('key'))
         if user:
-            print("USER: ", user)
-            user.update(points=500)
-    
+            user.update(points=500, request_points_key='', request_points_requested='')
+
     context = {
     }
     return render(request, 'redeem_points.html', context)
 
+
+def chat_room(request):
+    context = {
+        
+    }
+    
+    return render(request, 'chat/index.html', context)
+
+
+def room(request, room_name):
+    context = {
+        "room": room_name
+    }
+    
+    return render(request, 'chat/room.html', context)
+
+# TODO: pantalla inicial
 # TODO: sistema de email para enviar un email para pedir recarga de puntos | falta ver fecha caducidad del token y cuantas veces lo puedo pedir o esperar para pedir
+# TODO: cantidad de puntos en el ranking
 # TODO: crear sistema para ver si un user esta online
 # TODO: implementar desafio, django channels juego online
 # TODO: mensajeria, notificaciones
+# TODO: crear base de datos para guardar amigos
+# TODO: crear chat online con otros users
+
+# Borderlands (PS3) | usd 2
+# Borderlands 2 (PS3) | usd 5
+# The Last of Us (PS3) | usd 10
+# The Elder Scrolls IV: Oblivion (PS3) | usd 10
+# The Elder Scrolls IV: Shivering Isles (PS3) | usd 10 
+# Bioshock Infinite (PS3) | usd 5
+# Dragon Age Origins: Ultimate Edition (PS3) | usd 10
+# Dragon Age: Origins Awakening (PS3) | usd 10
+# Dragon Age 2 (PS3) | usd 10
+# Battlefield 3 (PS3) | usd 5
+# God of War: Saga Collection (PS3) | usd 25
+# Mass Effect Trilogy (PS3) | usd 10
+# Kingdom Hearts HD 1.5 Remix (PS3) | usd 10
+# Dead Space (PS3) | usd 10
+# Dark Souls (PS3) | usd 10
+
+
+# The Elder Scrolls V: Skyrim Special Edition (PS4) | usd 8
+# The Elder Scrolls V: Skyrim (PS4) | usd 5
+# The Elder Scrolls Online: Imperial Edition (PS4) | usd
+# The Witcher 3: Wild Hunt (PS4) | usd 8
+# Destiny - Standard Edition (PS4) | usd 5
+# Prey (PS4) | usd 5
+# Dark Souls III: The Fire Fades (PS4) | usd 5
+# Bloodborne (PS4) | usd 8
+# Battlefield V (PS4) | usd 8
+# Far Cry 5 (PS4) | usd 6
+# Star Wars: Battlefront (PS4) | usd 5
+# Merge Games Yonder The Cloud Catcher Chronicles (PS4) | usd 8
+# Dragon Age Inquisition (PS4) | usd 8
+# Spyro Trilogy Reignited (PS4) | usd 10
+# Doom: Eternal (PS4) | usd 8
+# God of War Hits (PS4) | usd 8
+# Fallout 4 - (PS4) | usd 8
+# Mass Effect Andromeda - (PS4) | usd 8

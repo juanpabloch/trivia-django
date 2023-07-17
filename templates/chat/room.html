@@ -1,0 +1,21 @@
+{% extends 'main.html' %}
+{% load static %}
+
+
+{{room_name|json_script:"room_name"}}
+{% block content %}
+<script>
+    const roomName = JSON.parse(document.getElementById('room_name'))
+    const chatWebSocket = new WebSocket(
+        'ws://' + 
+        windows.location.host + 
+        'ws/chat_room/' + 
+        roomName +
+        '/'
+    )    
+</script>
+
+<div class="container">
+    <h1>Chat room: {{room}}</h1>
+</div>
+{% endblock content %}
