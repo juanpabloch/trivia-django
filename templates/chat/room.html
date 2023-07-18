@@ -1,21 +1,33 @@
 {% extends 'main.html' %}
 {% load static %}
 
-
-{{room_name|json_script:"room_name"}}
 {% block content %}
-<script>
-    const roomName = JSON.parse(document.getElementById('room_name'))
-    const chatWebSocket = new WebSocket(
-        'ws://' + 
-        windows.location.host + 
-        'ws/chat_room/' + 
-        roomName +
-        '/'
-    )    
-</script>
 
 <div class="container">
     <h1>Chat room: {{room}}</h1>
 </div>
+
+<div class="user-hello">
+
+</div>
+
+{{room|json_script:"room_name"}}
+
+<script>
+    const roomName = JSON.parse(document.getElementById('room_name').textContent)
+    const url = 'ws://' + window.location.host + '/ws/chat_room/' + roomName + '/' 
+    const chatWebSocket = new WebSocket(url)
+
+    chatWebSocket.onopen = function(e){
+        chatWebSocket.send(JSON.stringify({
+            "message": 'Connection Establish',
+        }))
+    }
+
+    chatWebSocket.onmessage = function(e){
+        console.log(e)
+        const data = JSON.parse(e.data)
+        document.querySelector('.user-hello').innerHTML= data.tester
+    }
+</script>
 {% endblock content %}

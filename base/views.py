@@ -109,7 +109,7 @@ def game_view(request):
 
     while not question.get('question'):
         try:
-            question = trivia.get_question('https://opentdb.com/api.php') 
+            question = trivia.get_question('https://opentdb.com/api.php', request.user) 
         except (request.HTTPError, request.ConnectionError):
             continue
         
@@ -257,13 +257,15 @@ def room(request, room_name):
     return render(request, 'chat/room.html', context)
 
 # TODO: pantalla inicial
-# TODO: sistema de email para enviar un email para pedir recarga de puntos | falta ver fecha caducidad del token y cuantas veces lo puedo pedir o esperar para pedir
-# TODO: cantidad de puntos en el ranking
+# TODO: sistema de email para enviar un email para pedir recarga de puntos falta armar email
+# TODO: ranking sumar info
 # TODO: crear sistema para ver si un user esta online
 # TODO: implementar desafio, django channels juego online
 # TODO: mensajeria, notificaciones
 # TODO: crear base de datos para guardar amigos
 # TODO: crear chat online con otros users
+# TODO: eliminar historial para que no se pueda volver atras (solo dejar home, ver si puedo identificar que pagina es)
+
 
 # Borderlands (PS3) | usd 2
 # Borderlands 2 (PS3) | usd 5
