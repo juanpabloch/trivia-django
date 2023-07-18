@@ -41,8 +41,8 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
         
         
     async def chat_message(self, event):
-        messsage = event['chat_messages']
-        await self.send(text_data=json.dumps({"messsage":messsage,}))
+        message = event['chat_messages']
+        await self.send(text_data=json.dumps({"message":message,}))
             
 
     async def disconnect(self, code):

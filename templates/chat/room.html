@@ -5,11 +5,17 @@
 
 <div class="container">
     <h1>Chat room: {{room}}</h1>
-</div>
 
-<textarea name="chat-text" id="chat-text" cols="30" rows="10"></textarea>
-<input type="text" name="chat-message" id="chat-message">
-<input type="submit" value="Send" id="chat-submit">
+    <div class="mb-2">
+        <textarea class='form-control' name="chat-text" id="chat-text" cols="30" rows="10"></textarea>
+    </div>
+    <div class="mb-2">
+        <input class='form-control' type="text" name="chat-message" id="chat-message" placeholder="type message here...">
+    </div>
+    <div class="mb-2">
+        <input class='form-control btn btn-primary mb-3' type="submit" value="Send" id="chat-submit">
+    </div>
+</div>
 
 <div class="user-hello">
 
@@ -40,9 +46,12 @@
     })
 
     chatWebSocket.onmessage = function(e){
-        console.log(e)
         const data = JSON.parse(e.data)
-        document.querySelector('.user-hello').innerHTML= data.tester
+        if(data.tester){
+            document.querySelector('#chat-text').value += data.tester + '\n------------------------------------\n'
+        }else if(data.message){
+            document.querySelector('#chat-text').value += data.message + '\n'
+        }
     }
 </script>
 {% endblock content %}
