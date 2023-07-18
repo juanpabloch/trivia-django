@@ -7,6 +7,10 @@
     <h1>Chat room: {{room}}</h1>
 </div>
 
+<textarea name="chat-text" id="chat-text" cols="30" rows="10"></textarea>
+<input type="text" name="chat-message" id="chat-message">
+<input type="submit" value="Send" id="chat-submit">
+
 <div class="user-hello">
 
 </div>
@@ -14,6 +18,7 @@
 {{room|json_script:"room_name"}}
 
 <script>
+    const submitBtn = document.querySelector('#chat-submit')
     const roomName = JSON.parse(document.getElementById('room_name').textContent)
     const url = 'ws://' + window.location.host + '/ws/chat_room/' + roomName + '/' 
     const chatWebSocket = new WebSocket(url)
@@ -23,6 +28,16 @@
             "message": 'Connection Establish',
         }))
     }
+
+    submitBtn.addEventListener('click', (e)=>{
+        const chatMessage = document.querySelector("#chat-message")
+        const message = chatMessage.value
+        chatWebSocket.send(JSON.stringify({
+            "chat_message": message,
+        }))
+
+        chatMessage.value = ''
+    })
 
     chatWebSocket.onmessage = function(e){
         console.log(e)

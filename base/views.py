@@ -43,11 +43,8 @@ def login_view(request):
                 login(request, user)
                 return redirect('home')
             else:
-                context = {
-                    "error": "invalid user",
-                    "form": forms.LoginForm()
-                }
-                return render(request, 'registration/login.html', context)
+                messages.error(request, 'Email or password incorrect')
+    
     form = forms.LoginForm()
     context = {
         "form": form
