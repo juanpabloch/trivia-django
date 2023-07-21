@@ -1,0 +1,58 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container">
+    <h1>Chat room: {{room}}</h1>
+
+    <div class="mb-2">
+        <textarea class='form-control' name="chat-text" id="chat-text" cols="30" rows="10"></textarea>
+    </div>
+    <div class="mb-2">
+        <input class='form-control' type="text" name="chat-message" id="chat-message" placeholder="type message here...">
+    </div>
+    <div class="mb-2">
+        <input class='form-control btn btn-primary mb-3' type="submit" value="Send" id="chat-submit">
+    </div>
+
+</div>
+
+
+{{room|json_script:"room_name"}}
+{{request.user.email|json_script:"user_name"}}
+
+<script>
+    const submitBtn = document.querySelector('#chat-submit')
+    const roomName = JSON.parse(document.getElementById('room_name').textContent)
+    const userName = JSON.parse(document.getElementById('user_name').textContent)
+    const url = 'ws://' + window.location.host + '/ws/chat_room/' + roomName + '/' 
+    const chatWebSocket = new WebSocket(url)
+
+    chatWebSocket.onopen = function(e){
+        chatWebSocket.send(JSON.stringify({
+            "message": 'Connection Establish',
+        }))
+    }
+
+    submitBtn.addEventListener('click', (e)=>{
+        const chatMessage = document.querySelector("#chat-message")
+        const message = chatMessage.value
+        chatWebSocket.send(JSON.stringify({
+            "chat_message": message,
+            "chat_user": userName
+        }))
+
+        chatMessage.value = ''
+    })
+
+    chatWebSocket.onmessage = function(e){
+        const data = JSON.parse(e.data)
+        if(data.tester){
+            document.querySelector('#chat-text').value += data.tester + '\n------------------------------------\n'
+        }else if(data.message){
+            document.querySelector('#chat-text').value += (data.user + ': ' + data.message + '\n')
+        }
+    }
+</script>
+{% endblock content %}

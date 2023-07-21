@@ -1,4 +1,5 @@
 {% extends 'game.html' %}
+{% load triviatags %}
 
 {% block game_content %}
 
@@ -8,13 +9,13 @@
             {% comment %} {% for question in questions %} {% endcomment %}
                 <div class="card">
                     <div class="card-header">
-                        {{question.question|safe}}
+                        {{question.question|translate|safe}}
                     </div>
                     <div class="card-body">
                         {% for answer in question.answers %}
                         <div>
                             <input type="radio" id="question" name="question_{{question.question_num}}" value="{{answer}}" required>
-                            <label for="huey">{{answer|safe}}</label>
+                            <label for="huey">{{answer|translate|safe}}</label>
                         </div>
                         {% endfor %}
                     </div>

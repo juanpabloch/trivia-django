@@ -6,6 +6,16 @@ from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse, JsonResponse
+from django.contrib import messages
+from django.core.exceptions import EmptyResultSet
+
+from django.core.mail import EmailMessage, get_connection
+from trivia import settings
+
+from email.mime.text import MIMEText
+import ssl
+import smtplib
+import uuid
 
 from datetime import datetime
 import ast
@@ -13,9 +23,9 @@ import json
 
 # from base.services import fetch_data
 from base.services.fetch_data import FetchTriviaData
-from base.services.utils import get_results, get_total_points, get_total_time
+from base.services.utils import get_results, get_total_points, get_total_time, score_redirect
 from base import trivia
-from base.templatetags import triviatags
+from base.templatetags.triviatags import translate 
 
 UserModel = get_user_model()
 
@@ -33,11 +43,8 @@ def login_view(request):
                 login(request, user)
                 return redirect('home')
             else:
-                context = {
-                    "error": "invalid user",
-                    "form": forms.LoginForm()
-                }
-                return render(request, 'registration/login.html', context)
+                messages.error(request, 'Email or password incorrect')
+    
     form = forms.LoginForm()
     context = {
         "form": form
@@ -52,7 +59,6 @@ def register_view(request):
             user = form.save()
             user.set_password(user.password)
             user.save()
-            print("USER_register: ", user)
             return redirect('login')
             
     form = forms.RegisterForm()
@@ -78,16 +84,38 @@ def home(request):
 
 
 def game_view(request):
-    flag = True
-    bet = {}
-    while flag:
-        question = trivia.get_question('https://opentdb.com/api.php')
-        if question.get('question'):
-            request.session['questions'] = question
-            bet = trivia.get_bet_percentage(request.user.points)
-            flag = False            
+    if not request.user.is_authenticated:
+        return redirect('login')
     
-    question = triviatags.translate_(question)
+    if score_redirect(request):
+        return redirect('home')
+    
+    if request.method == "POST":
+        question = request.session.get('questions')
+        user = request.user
+        
+        result = trivia.is_correct(question, request.POST)
+        user.add_answered()
+        if result:
+            points = trivia.get_points(int(request.POST.get('bet')), int(request.POST.get("current_time")))
+            user.add_points(points)
+            user.add_correctly()
+        else:   
+            user.subtract_points(int(request.POST.get('bet')))
+
+    question = {}
+
+    while not question.get('question'):
+        try:
+            question = trivia.get_question('https://opentdb.com/api.php', request.user) 
+        except (request.HTTPError, request.ConnectionError):
+            continue
+        
+    if not question:
+        raise EmptyResultSet("No question found, please try again later")
+    
+    request.session['questions'] = question
+    bet = trivia.get_bet_percentage(request.user.points)
     context = {
         "question": question,
         "bet": bet,
@@ -96,19 +124,34 @@ def game_view(request):
    
    
 def questions_form(request):
-    if request.method == "POST":
-        question = request.session.get('questions')
-        user = request.user
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
+    result = ''
+    
+    if request.method == 'POST':
+        answer = request.POST.get("answer")
+        correct = request.session.get('questions')
+        bet = request.POST.get('bet')
+        time = int(request.POST.get('time'))
         
-        result = trivia.is_correct(question, request.POST)
-        user.add_answered()
-        if result:
-            user.add_points(int(request.POST.get('bet')))
-            user.add_correctly()
-        else:   
-            user.subtract_points(int(request.POST.get('bet')))
-
-        return redirect('game_view')
+        print(correct['answers'])
+        print(f"answer: {answer} | correct: {correct['correct_answer']}")
+        print(f"bet: {bet} | time: {time}")
+        if answer == correct["correct_answer"]:
+            result = 'correct'
+            points = trivia.get_points(int(bet), time)
+        else:
+            result = 'incorrect'
+            points = int(bet)
+    
+    # return HttpResponse(json.dumps({'result': result, "correct_a": correct["correct_answer"]}), content_type="application/json", status=200)
+    return JsonResponse({
+        "result": result, 
+        "points": points,
+        "correct_a": correct["correct_answer"], 
+        "correct_a_trans": translate(correct["correct_answer"])
+    })
 
 
 def players_rankings(request):
@@ -133,7 +176,8 @@ def wrong_answer(request):
         except Exception as err:
             print(err)
             return HttpResponse(status=500)
-        
+    
+    return redirect('home')    
         
 """
     USER:  [
@@ -152,3 +196,121 @@ def wrong_answer(request):
         'username', 'username_validator', 'validate_unique'
     ]
 """
+
+def get_points_request(request):
+    if request.method == 'POST':
+        user = models.CustomUser.objects.filter(id=request.user.id).first()
+        token = str(uuid.uuid4())
+        requested = datetime.now()
+        user.request_points_key = token
+        user.request_points_requested = str(requested)
+        user.save()
+        url = request.get_host()
+        # TODO: armar una clase
+        content=f"""
+        Hola aca te mando un link para conseguir mas puntos!
+        {url}/redeem_points/?key={user.request_points_key}
+        """
+
+        subject= "Hola aca tenemos mas puntos para vos!"
+        
+        # typical values for text_subtype are plain, html, xml
+        text_subtype = 'plain'
+        msg = MIMEText(content, text_subtype)
+        msg['Subject'] = subject
+        msg['From'] = settings.EMAIL_HOST_USER
+        context = ssl.create_default_context()
+        
+        try:
+            with smtplib.SMTP_SSL(settings.EMAIL_HOST, settings.EMAIL_PORT, context=context) as smtp:
+                smtp.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
+                smtp.sendmail(
+                    settings.EMAIL_HOST_USER,
+                    ["juanpablochoter@gmail.com"], 
+                    msg.as_string()
+                )
+            messages.success(request, "Te enviamos un email con un link para recibir los puntos!")
+        except Exception as e:
+            print(e)
+            messages.error(request, "Error al enviar el email")
+        
+        
+    return redirect('home')    
+
+
+def redeem_points(request):
+    if request.GET.get('key'):
+        user = models.CustomUser.objects.filter(request_points_key=request.GET.get('key'))
+        if user:
+            user.update(points=500, request_points_key='', request_points_requested='')
+
+    context = {
+    }
+    return render(request, 'redeem_points.html', context)
+
+
+def chat_room(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        if name:
+            return redirect('room', room_name=name)
+        
+    context = {}
+    return render(request, 'chat/index.html', context)
+
+
+def room(request, room_name):
+    context = {
+        "room": room_name
+    }
+    
+    return render(request, 'chat/room.html', context)
+
+# TODO: ranking sumar info
+# TODO: eliminar historial para que no se pueda volver atras (solo dejar home, ver si puedo identificar que pagina es)
+# TODO: refactorizar codigo
+# TODO: pantalla inicial
+# TODO: sistema de email para pedir recarga de puntos falta armar email
+# TODO: premios a la racha 5 seguidas 10 seguidas 20 seguidas 30 seguidas
+# TODO: implementar desafio, django channels juego online
+# TODO: crear base de datos para guardar amigos
+# TODO: crear sistema para ver si un user esta online
+# TODO: mensajeria, notificaciones
+# TODO: crear chat online con otros users
+
+
+# Borderlands (PS3) | usd 2
+# Borderlands 2 (PS3) | usd 5
+# The Last of Us (PS3) | usd 10
+# The Elder Scrolls IV: Oblivion (PS3) | usd 10
+# The Elder Scrolls IV: Shivering Isles (PS3) | usd 10 
+# Bioshock Infinite (PS3) | usd 5
+# Dragon Age Origins: Ultimate Edition (PS3) | usd 10
+# Dragon Age: Origins Awakening (PS3) | usd 10
+# Dragon Age 2 (PS3) | usd 10
+# Battlefield 3 (PS3) | usd 5
+# God of War: Saga Collection (PS3) | usd 25
+# Mass Effect Trilogy (PS3) | usd 10
+# Kingdom Hearts HD 1.5 Remix (PS3) | usd 10
+# Dead Space (PS3) | usd 10
+# Dark Souls (PS3) | usd 10
+
+
+# The Elder Scrolls V: Skyrim Special Edition (PS4) | usd 8
+# The Elder Scrolls V: Skyrim (PS4) | usd 5
+# The Elder Scrolls Online: Imperial Edition (PS4) | usd
+# The Witcher 3: Wild Hunt (PS4) | usd 8
+# Destiny - Standard Edition (PS4) | usd 5
+# Prey (PS4) | usd 5
+# Dark Souls III: The Fire Fades (PS4) | usd 5
+# Bloodborne (PS4) | usd 8
+# Battlefield V (PS4) | usd 8
+# Far Cry 5 (PS4) | usd 6
+# Star Wars: Battlefront (PS4) | usd 5
+# Merge Games Yonder The Cloud Catcher Chronicles (PS4) | usd 8
+# Dragon Age Inquisition (PS4) | usd 8
+# Spyro Trilogy Reignited (PS4) | usd 10
+# Doom: Eternal (PS4) | usd 8
+# God of War Hits (PS4) | usd 8
+# Fallout 4 - (PS4) | usd 8
+# Mass Effect Andromeda - (PS4) | usd 8

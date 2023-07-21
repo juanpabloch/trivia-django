@@ -1,0 +1,18 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container">
+    <h1>Chat</h1>
+
+    <p>Crear sala de chat</p>
+    <form action="" method="post">
+        {% csrf_token %}
+        <label for="name">Nombre de sala</label>
+        <input type="text" name="name" id="name">
+        <input type="submit" value="Crear">
+    </form>
+
+</div>
+{% endblock content %}

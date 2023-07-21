@@ -1,10 +1,10 @@
 {% extends 'main.html' %}
+{% load static %}
 
 {% block content %}
-<div class="container">
 
+<div id="main" class="container">
     <h1>TRIVIA</h1>
-
 
     {% if request.user.is_authenticated %}
         <a href="{% url 'logout' %}">Logout</a>
@@ -25,14 +25,60 @@
         <div>
             <ol>
                 {% for player in top_ten %}
-                <li>{{player}}</li>
+                <li>{{player}} --> <span>{{player.points}}</span></li>
                 {% endfor %}
             </ol>
         </div>
         <a href="{% url 'players_rankings' %}">Complete ranking</a>
         
-        <a href="{% url 'game_view' %}">Empezar</a>
+        {% if request.user.points <= 0 %}
+            <form action="{% url 'get_points_request' %}" method="post">
+                {% csrf_token %}
+                <input type="submit" value="Pedir puntos">
+            </form>
+        {% else %}
+            <a id="play" href="{% url 'game_view' %}">Empezar</a>
+        {% endif %}
+
+        {% comment %} mensajes {% endcomment %}
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{message}}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% else %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{message}}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
+
+        <div>
+            <a href="{% url 'chat_room' %}">Entrar al chat</a>
+        </div>
 </div>
+
+<div id="loading" class="hide">
+    <div class="info">
+        <h1>Trivia</h1>
+        <h3>Tienes 30 segundos para contestar</h3>
+        <h3>antes de ver la pregunta debes colocar una apuesta</h3>
+        <h3>si el tiempo se termina la pregunta se considera incorrecta</h3>
+    </div>
     
+
+    <div class="ring">
+        Loading
+        <span></span>
+    </div>
+
+</div>
+
+<script src="{% static 'js/index.js' %}"></script>
 {% endblock content %}
     
