@@ -15,17 +15,17 @@
     <div class="mb-2">
         <input class='form-control btn btn-primary mb-3' type="submit" value="Send" id="chat-submit">
     </div>
-</div>
-
-<div class="user-hello">
 
 </div>
+
 
 {{room|json_script:"room_name"}}
+{{request.user.email|json_script:"user_name"}}
 
 <script>
     const submitBtn = document.querySelector('#chat-submit')
     const roomName = JSON.parse(document.getElementById('room_name').textContent)
+    const userName = JSON.parse(document.getElementById('user_name').textContent)
     const url = 'ws://' + window.location.host + '/ws/chat_room/' + roomName + '/' 
     const chatWebSocket = new WebSocket(url)
 
@@ -40,6 +40,7 @@
         const message = chatMessage.value
         chatWebSocket.send(JSON.stringify({
             "chat_message": message,
+            "chat_user": userName
         }))
 
         chatMessage.value = ''
@@ -50,7 +51,7 @@
         if(data.tester){
             document.querySelector('#chat-text').value += data.tester + '\n------------------------------------\n'
         }else if(data.message){
-            document.querySelector('#chat-text').value += data.message + '\n'
+            document.querySelector('#chat-text').value += (data.user + ': ' + data.message + '\n')
         }
     }
 </script>

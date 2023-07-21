@@ -16,7 +16,6 @@ def get_data(api, points):
         categories = models.Category.objects.all()
         category = random.choice(categories)
         url = api + f'?amount=1' + f'&category={category.number}' + f'&difficulty={random.choice(get_dificulty(points))}'
-        print("URL: ", url)
         response_api = requests.get(url)
         data = json.loads(response_api.text)
         return data
@@ -32,6 +31,7 @@ def get_question(api, user):
             new_result["answers"].append(question["correct_answer"])
             random.shuffle(new_result["answers"])
             new_result["category"] = question["category"]
+            new_result["difficulty"] = question["difficulty"]
 
         return new_result
 
@@ -52,6 +52,16 @@ def get_bet_percentage(points):
         "50": int((points*50)/100),
     }
     return bet
+
+
+def get_points(points, time):
+    if time > 10:
+        if time < 20:
+            return math.ceil(points * 1.1)
+        else:
+            return math.ceil(points * 1.3)
+    else:
+        return points
 
 
 def get_dificulty(points):

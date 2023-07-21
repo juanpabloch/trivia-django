@@ -97,7 +97,8 @@ def game_view(request):
         result = trivia.is_correct(question, request.POST)
         user.add_answered()
         if result:
-            user.add_points(int(request.POST.get('bet')))
+            points = trivia.get_points(int(request.POST.get('bet')), int(request.POST.get("current_time")))
+            user.add_points(points)
             user.add_correctly()
         else:   
             user.subtract_points(int(request.POST.get('bet')))
@@ -115,7 +116,6 @@ def game_view(request):
     
     request.session['questions'] = question
     bet = trivia.get_bet_percentage(request.user.points)
-        
     context = {
         "question": question,
         "bet": bet,
@@ -132,15 +132,26 @@ def questions_form(request):
     if request.method == 'POST':
         answer = request.POST.get("answer")
         correct = request.session.get('questions')
+        bet = request.POST.get('bet')
+        time = int(request.POST.get('time'))
+        
         print(correct['answers'])
         print(f"answer: {answer} | correct: {correct['correct_answer']}")
+        print(f"bet: {bet} | time: {time}")
         if answer == correct["correct_answer"]:
             result = 'correct'
+            points = trivia.get_points(int(bet), time)
         else:
             result = 'incorrect'
+            points = int(bet)
     
     # return HttpResponse(json.dumps({'result': result, "correct_a": correct["correct_answer"]}), content_type="application/json", status=200)
-    return JsonResponse({'result': result, "correct_a": correct["correct_answer"], "correct_a_trans": translate(correct["correct_answer"])})
+    return JsonResponse({
+        "result": result, 
+        "points": points,
+        "correct_a": correct["correct_answer"], 
+        "correct_a_trans": translate(correct["correct_answer"])
+    })
 
 
 def players_rankings(request):
@@ -206,7 +217,7 @@ def get_points_request(request):
         # typical values for text_subtype are plain, html, xml
         text_subtype = 'plain'
         msg = MIMEText(content, text_subtype)
-        msg['Subject'] =       subject
+        msg['Subject'] = subject
         msg['From'] = settings.EMAIL_HOST_USER
         context = ssl.create_default_context()
         
@@ -239,10 +250,12 @@ def redeem_points(request):
 
 
 def chat_room(request):
-    context = {
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        if name:
+            return redirect('room', room_name=name)
         
-    }
-    
+    context = {}
     return render(request, 'chat/index.html', context)
 
 
@@ -253,15 +266,17 @@ def room(request, room_name):
     
     return render(request, 'chat/room.html', context)
 
-# TODO: pantalla inicial
-# TODO: sistema de email para enviar un email para pedir recarga de puntos falta armar email
 # TODO: ranking sumar info
-# TODO: crear sistema para ver si un user esta online
-# TODO: implementar desafio, django channels juego online
-# TODO: mensajeria, notificaciones
-# TODO: crear base de datos para guardar amigos
-# TODO: crear chat online con otros users
 # TODO: eliminar historial para que no se pueda volver atras (solo dejar home, ver si puedo identificar que pagina es)
+# TODO: refactorizar codigo
+# TODO: pantalla inicial
+# TODO: sistema de email para pedir recarga de puntos falta armar email
+# TODO: premios a la racha 5 seguidas 10 seguidas 20 seguidas 30 seguidas
+# TODO: implementar desafio, django channels juego online
+# TODO: crear base de datos para guardar amigos
+# TODO: crear sistema para ver si un user esta online
+# TODO: mensajeria, notificaciones
+# TODO: crear chat online con otros users
 
 
 # Borderlands (PS3) | usd 2

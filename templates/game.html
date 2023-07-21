@@ -14,12 +14,12 @@
         </div>
 
         <div class="title">
-            <h2>{{question.category|translate}}</h2>
+            <h2 class="{{question.difficulty}}">{{question.category|translate}}</h2>
         </div>
         {% comment %} <form action="{% url 'questions_form' %}" method="post"> {% endcomment %}
         <form action="" method="post">
             {% csrf_token %}
-
+            <input type="hidden" name="current_time" value=''>
             <div class="card-container hide">
                 <div class="card">
                     <div class="card-header">
@@ -29,8 +29,8 @@
                     <div class="card-body">
                         {% for answer in question.answers %}
                         <div>
-                            <input type="radio" id="answer" name="answer" value="{{answer}}" required>
-                            <label for="huey">{{answer|translate|safe}} - <span class="answer-eng">({{answer|safe}})</span></label>
+                            <input type="radio" id="answer{{forloop.counter}}" name="answer" value="{{answer}}" required>
+                            <label for="answer{{forloop.counter}}">{{answer|translate|safe}} - <span class="answer-eng">({{answer|safe}})</span></label>
                         </div>
                         {% endfor %}
                     </div>
@@ -42,8 +42,8 @@
                 {% for key, value in bet.items %}
                     {% if value > 0 %}
                         <div>
-                            <input type="radio" id="bet" name="bet" value="{{value}}" required>
-                            <label>{{value}}</label>
+                            <input type="radio" id="bet{{forloop.counter}}" name="bet" value="{{value}}" required>
+                            <label for="bet{{forloop.counter}}">{{value}}</label>
                         </div>
                     {% endif %}
                 {% endfor %}
@@ -62,6 +62,7 @@
     <div class="container-result hide">
         <div class="result correct hide">
             <h1>¡Correcto!</h1>
+            <p class="points">Ganaste: <span></span> puntos</p>
         </div>
 
         <div class="result incorrect hide">
@@ -69,6 +70,7 @@
             <p>the correct answer is:</p>
             <p class="correct_a"></p>
             <p class="correct_a_trans"></p>
+            <p class="points">Perdiste: <span></span> puntos</p>
         </div>
     </div>
 

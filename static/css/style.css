@@ -181,6 +181,30 @@ span.answer-eng{
 }
 
 
+.container-result .points span{
+  font-size: 2rem;
+}
+
+
+.chat-container{
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+
+.easy{
+  color: #6ab068;
+}
+
+.medium{
+  color: #6e6807;
+}
+
+.hard{
+  color: #ca4343;
+}
+
+
 /* HIDE */
 .hide{
   display: none;

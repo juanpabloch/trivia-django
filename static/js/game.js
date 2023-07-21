@@ -27,10 +27,18 @@ window.addEventListener('load', function(e){
     submitBtn.addEventListener('click', (e)=>{
         clearTimeout(timerId);
         e.preventDefault()
+        
         const answer = this.document.querySelector('input[name="answer"]:checked').value;
-        const token = document.querySelector('input[name="csrfmiddlewaretoken"]').value
+        const time = document.querySelector('.countdown-box h1').textContent;
+        const currentTime = this.document.querySelector('input[name="current_time"]');
+        currentTime.value = time
+        const bet = document.querySelector('input[name="bet"]:checked').value;
+        const token = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+        const points_card = this.document.querySelectorAll('.points span')
         var formData = new FormData();
         formData.append("answer", answer)
+        formData.append("time", time)
+        formData.append("bet", bet)
         // crear codigo para cuando se 
         $.ajax({
             type:"POST",
@@ -42,6 +50,9 @@ window.addEventListener('load', function(e){
             complete: function(data){
                 if(typeof(data.status) != 'undefined'){
                     if(data.status == 200){
+                        points_card.forEach(item=>{
+                            item.textContent = data.responseJSON.points
+                        })
                         containerResult.classList.remove('hide')
                         if(data.responseJSON.result === 'correct'){
                             correctCard.classList.remove('hide')
