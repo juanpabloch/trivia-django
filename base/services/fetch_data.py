@@ -35,7 +35,6 @@ class FetchTriviaData():
         categories = models.Category.objects.all()
         self.category = random.choice(categories)
         url = self.url + f'&category={self.category.number}' + f'&difficulty={random.choice(DIFFICULTY)}'
-        print("URL: ", url)
         response_api = requests.get(url)
         data = json.loads(response_api.text)
         return data

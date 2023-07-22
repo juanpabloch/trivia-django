@@ -266,11 +266,14 @@ def room(request, room_name):
     
     return render(request, 'chat/room.html', context)
 
+
+# TODO: deploy python anyware (ver base de datos o sqlite) 
 # TODO: ranking sumar info
 # TODO: eliminar historial para que no se pueda volver atras (solo dejar home, ver si puedo identificar que pagina es)
 # TODO: refactorizar codigo
 # TODO: pantalla inicial
 # TODO: sistema de email para pedir recarga de puntos falta armar email
+# TODO: log de errores
 # TODO: premios a la racha 5 seguidas 10 seguidas 20 seguidas 30 seguidas
 # TODO: implementar desafio, django channels juego online
 # TODO: crear base de datos para guardar amigos

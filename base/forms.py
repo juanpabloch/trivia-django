@@ -16,13 +16,10 @@ class RegisterForm(forms.ModelForm):
     def clean_password(self):
         password = self.cleaned_data.get("password")
         confirm_password = self.cleaned_data.get("confirm_password")
-        print(f"password: {password} | confirm_password: {confirm_password}")
         if len(password) < 8:
-            print("pass menor a 8")
             raise forms.ValidationError('Password must be at least 8 characters long.')
         
         if password != confirm_password:
-            print("ERROR no son iguales")
             raise forms.ValidationError('Passwords do not match.')
       
         
