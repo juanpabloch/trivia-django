@@ -1,12 +1,50 @@
 {% extends 'main.html' %}
 
 {% block content %}
-<div class="container">
+<div class="container" id="ranking">
     <h1>Ranking</h1>
+    <h2>{{request.user.email}}: {{request.user.points}}</h2>
     <div>
         <ol>
             {% for player in ranking %}
-            <li>{{player}}</li>
+            <li class="mb-3">
+                <span class="position">{{forloop.counter}}</span>
+                {% comment %} name {% endcomment %}
+                <span class="player">{{player}}</span> 
+                {% comment %} stats {% endcomment %}
+                <div class="stats">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th scope="col">TOT</th>
+                                <th scope="col">COR</th>
+                                <th scope="col">%</th>
+                            </tr>
+                        </thead>
+                        {% with player.get_player_stats as stats %}
+                        <tbody>
+                            <tr>
+                                <td>
+                                    {{stats.answer}}
+                                </td>
+                                <td>
+                                     {{stats.correctly}}
+                                </td>
+                                <td>
+                                    {{stats.percentage}}
+                                </td>
+                            </tr>
+                        </tbody>
+                        {% endwith %}
+                    </table>
+                    {% comment %} {% with player.get_player_stats as stats %}
+                        <p class="">answer: {{stats.answer}}</p>
+                        <p class="">correctly: {{stats.correctly}}</p>
+                        <p class="">percentage: %{{stats.percentage}}</p>
+                    {% endwith %} {% endcomment %}
+                </div>
+                <span class="points">{{player.points}}</span>
+            </li>
             {% endfor %}
         </ol>
     </div>

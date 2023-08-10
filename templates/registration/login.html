@@ -1,31 +1,45 @@
 {% extends 'main.html' %}
 
 {% block content %}
-<h1>Login</h1>
+<div class="container login">
 
-<div class="login">
-    <form action="" method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Entrar">
-    </form>
+    <div class="content">
+        <h1>LOGIN</h1>
+        <form id="loginForm" action="" method="post">
+            {% csrf_token %}
+            <div class="form-group mb-3 col-12">
+                {{form.email}}
+            </div>
+
+            <div class="form-group mb-3 col-12">
+                {{form.password}}
+            </div>
+
+            <input type="submit" value="Entrar">
+
+            <div class="error_mesage mt-3">
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if message.tags == 'error' %}
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                {{message}}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                {{message}}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </form>
+        
+        
+
+        <p class="mt-4">No tienes una cuenta ingresa <a class="register_link" href="{% url 'register' %}">aqui</a>.</p>
+    </div>
+
 </div>
-{% if messages %}
-    {% for message in messages %}
-        {% if message.tags == 'error' %}
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                {{message}}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% else %}
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{message}}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% endif %}
-    {% endfor %}
-{% endif %}
-
-<p>No tienes una cuenta ingresa <a href="{% url 'register' %}">aqui</a></p>
-
 {% endblock content %}

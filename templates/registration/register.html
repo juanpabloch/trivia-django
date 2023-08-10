@@ -2,32 +2,45 @@
 
 
 {% block content %}
-<h1>Register</h1>
+<div class="container login">
+    <div class="content">
+        <h1>Register</h1>
 
-<div class="register">
-    <form action="" method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Registrate">
-    </form>
-    
-    {% if form.errors %}
-        <div class="alert alert-danger">
-            <ul>
-                {% for field, errors in form.errors.items %}
-                    {% for error in errors %}
-                        <li>{{ field }}: {{ error }}</li>
-                    {% endfor %}
-                {% endfor %}
-            </ul>
-        </div>
-    {% endif %}
+        <div class="register">
+            <form id="registerForm" action="" method="post">
+                {% csrf_token %}
+
+                <div class="form-group mb-3 col-12">
+                    {{form.email}}
+                </div>
+                <div class="form-group mb-3 col-12">
+                    {{form.password}}
+                </div>
+                <div class="form-group mb-3 col-12">
+                    {{form.confirm_password}}
+                </div>
+
+                <input type="submit" value="Registrate">
+            </form>
             
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    <ul>
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <li>{{ field }}: {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+                    
+
+        </div>
+
+        <p class="mt-4">Ya tienes un usuario logueate <a href="{% url 'login' %}">aqui</a></p>
+    </div>
 
 </div>
-
-
-<p>Ya tienes un usuario logueate <a href="{% url 'login' %}">aqui</a></p>
-
 {% endblock content %}
     

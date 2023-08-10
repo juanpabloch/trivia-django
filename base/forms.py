@@ -6,8 +6,24 @@ from base.services import utils
 User = get_user_model()
 
 class RegisterForm(forms.ModelForm):
-    password = forms.CharField(widget = forms.PasswordInput())
-    confirm_password = forms.CharField(widget = forms.PasswordInput())
+    email = forms.EmailField(widget= forms.EmailInput(
+        attrs={
+            "placeholder": "Email",
+            "class": "form-control"
+        }
+    ))
+    password = forms.CharField(widget = forms.PasswordInput(
+        attrs={
+            "placeholder": "Password",
+            "class": "form-control"
+        }
+    ))
+    confirm_password = forms.CharField(widget = forms.PasswordInput(
+        attrs={
+            "placeholder": "Confirm password",
+            "class": "form-control"
+        }
+    ))
     
     class Meta:
         model = User
@@ -24,8 +40,18 @@ class RegisterForm(forms.ModelForm):
       
         
 class LoginForm(forms.Form):
-    email = forms.EmailField()
-    password = forms.CharField(widget = forms.PasswordInput())
+    email = forms.EmailField(widget= forms.EmailInput(
+        attrs={
+            "placeholder": "Email",
+            "class": "form-control"
+        }
+    ))
+    password = forms.CharField(widget = forms.PasswordInput(
+        attrs={
+            "placeholder": "Password",
+            "class": "form-control"
+        }
+    ))
     
 
 class OptionsForm(forms.Form):

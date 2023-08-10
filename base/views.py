@@ -16,6 +16,7 @@ from email.mime.text import MIMEText
 import ssl
 import smtplib
 import uuid
+import logging
 
 from datetime import datetime
 import ast
@@ -28,7 +29,7 @@ from base import trivia
 from base.templatetags.triviatags import translate 
 
 UserModel = get_user_model()
-
+logger = logging.getLogger(__name__)
 
 def login_view(request):
     if request.user.is_authenticated:
@@ -109,6 +110,7 @@ def game_view(request):
         try:
             question = trivia.get_question('https://opentdb.com/api.php', request.user) 
         except (request.HTTPError, request.ConnectionError):
+            logger.error('No connection to the API', exc_info=True)
             continue
         
     if not question:
@@ -130,14 +132,11 @@ def questions_form(request):
     result = ''
     
     if request.method == 'POST':
-        answer = request.POST.get("answer")
         correct = request.session.get('questions')
+        answer = request.POST.get("answer")
         bet = request.POST.get('bet')
         time = int(request.POST.get('time'))
         
-        print(correct['answers'])
-        print(f"answer: {answer} | correct: {correct['correct_answer']}")
-        print(f"bet: {bet} | time: {time}")
         if answer == correct["correct_answer"]:
             result = 'correct'
             points = trivia.get_points(int(bet), time)
@@ -145,7 +144,6 @@ def questions_form(request):
             result = 'incorrect'
             points = int(bet)
     
-    # return HttpResponse(json.dumps({'result': result, "correct_a": correct["correct_answer"]}), content_type="application/json", status=200)
     return JsonResponse({
         "result": result, 
         "points": points,
@@ -157,8 +155,8 @@ def questions_form(request):
 def players_rankings(request):
     try:
         ranking = models.CustomUser.objects.all().order_by('-points')
-    except Exception as err:
-        print(err)
+    except Exception as e:
+        logger.error(f'Error getting players ranking: {e}', exc_info=True)
     
     context = {
         "ranking" : ranking
@@ -173,29 +171,12 @@ def wrong_answer(request):
             request.user.add_answered()
             request.user.subtract_points(int(request.POST.get('bet')))
             return HttpResponse(status=200)
-        except Exception as err:
-            print(err)
+        except Exception as e:
+            logger.error(f'Error returning a wrong answer: {e}', exc_info=True)
             return HttpResponse(status=500)
     
     return redirect('home')    
-        
-"""
-    USER:  [
-        'active', 'add_answered', 'add_correctly', 'add_points', 'banned', 'check', 'check_password', 'clean', 
-        'clean_fields', 'country', 'date_error_message', 'date_joined', 'delete', 'email', 
-        'email_user', 'first_name', 'from_db', 'full_clean', 'get_all_permissions', 
-        'get_deferred_fields', 'get_email_field_name', 'get_full_name', 'get_group_permissions', 'get_next_by_date_joined', 
-        'get_next_by_register', 'get_next_by_update', 'get_previous_by_date_joined', 'get_previous_by_register', 
-        'get_previous_by_update', 'get_session_auth_hash', 'get_short_name', 'get_user_permissions', 'get_username', 
-        'groups', 'has_module_perms', 'has_perm', 'has_perms', 'has_usable_password', 
-        'id', 'is_active', 'is_anonymous', 'is_authenticated', 'is_staff', 'is_superuser', 
-        'last_login', 'last_name', 'logentry_set', 'natural_key', 'normalize_username', 'objects', 'password', 
-        'pk', 'points', 'prepare_database_save', 'q_answered', 'q_correctly', 'q_history', 'refresh_from_db', 'register', 
-        'save', 'save_base', 'serializable_value', 'set_bet', 'set_password', 
-        'set_unusable_password', 'subtract_points', 'unique_error_message', 'update', 'user_permissions', 
-        'username', 'username_validator', 'validate_unique'
-    ]
-"""
+
 
 def get_points_request(request):
     if request.method == 'POST':
@@ -214,7 +195,6 @@ def get_points_request(request):
 
         subject= "Hola aca tenemos mas puntos para vos!"
         
-        # typical values for text_subtype are plain, html, xml
         text_subtype = 'plain'
         msg = MIMEText(content, text_subtype)
         msg['Subject'] = subject
@@ -231,7 +211,7 @@ def get_points_request(request):
                 )
             messages.success(request, "Te enviamos un email con un link para recibir los puntos!")
         except Exception as e:
-            print(e)
+            logger.error(f'Error sending points request email: {e}', exc_info=True)
             messages.error(request, "Error al enviar el email")
         
         
@@ -267,53 +247,15 @@ def room(request, room_name):
     return render(request, 'chat/room.html', context)
 
 
-# TODO: deploy python anyware (ver base de datos o sqlite) 
-# TODO: ranking sumar info
-# TODO: eliminar historial para que no se pueda volver atras (solo dejar home, ver si puedo identificar que pagina es)
-# TODO: refactorizar codigo
+# TODO: deploy python anyware revisar archivos 
+# TODO: refactorizar codigo + OPP
 # TODO: pantalla inicial
 # TODO: sistema de email para pedir recarga de puntos falta armar email
-# TODO: log de errores
+# TODO: traduccion
 # TODO: premios a la racha 5 seguidas 10 seguidas 20 seguidas 30 seguidas
 # TODO: implementar desafio, django channels juego online
 # TODO: crear base de datos para guardar amigos
 # TODO: crear sistema para ver si un user esta online
 # TODO: mensajeria, notificaciones
 # TODO: crear chat online con otros users
-
-
-# Borderlands (PS3) | usd 2
-# Borderlands 2 (PS3) | usd 5
-# The Last of Us (PS3) | usd 10
-# The Elder Scrolls IV: Oblivion (PS3) | usd 10
-# The Elder Scrolls IV: Shivering Isles (PS3) | usd 10 
-# Bioshock Infinite (PS3) | usd 5
-# Dragon Age Origins: Ultimate Edition (PS3) | usd 10
-# Dragon Age: Origins Awakening (PS3) | usd 10
-# Dragon Age 2 (PS3) | usd 10
-# Battlefield 3 (PS3) | usd 5
-# God of War: Saga Collection (PS3) | usd 25
-# Mass Effect Trilogy (PS3) | usd 10
-# Kingdom Hearts HD 1.5 Remix (PS3) | usd 10
-# Dead Space (PS3) | usd 10
-# Dark Souls (PS3) | usd 10
-
-
-# The Elder Scrolls V: Skyrim Special Edition (PS4) | usd 8
-# The Elder Scrolls V: Skyrim (PS4) | usd 5
-# The Elder Scrolls Online: Imperial Edition (PS4) | usd
-# The Witcher 3: Wild Hunt (PS4) | usd 8
-# Destiny - Standard Edition (PS4) | usd 5
-# Prey (PS4) | usd 5
-# Dark Souls III: The Fire Fades (PS4) | usd 5
-# Bloodborne (PS4) | usd 8
-# Battlefield V (PS4) | usd 8
-# Far Cry 5 (PS4) | usd 6
-# Star Wars: Battlefront (PS4) | usd 5
-# Merge Games Yonder The Cloud Catcher Chronicles (PS4) | usd 8
-# Dragon Age Inquisition (PS4) | usd 8
-# Spyro Trilogy Reignited (PS4) | usd 10
-# Doom: Eternal (PS4) | usd 8
-# God of War Hits (PS4) | usd 8
-# Fallout 4 - (PS4) | usd 8
-# Mass Effect Andromeda - (PS4) | usd 8
+# TODO: puntajes por semana y un premio al mejor de la semana

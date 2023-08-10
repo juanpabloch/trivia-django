@@ -3,6 +3,13 @@
 
 {% block content %}
 
+{% comment %} <div id="loading-game" class="container">
+    <div class="content">
+        <h1>Trivia!!!</h1>
+        <p>Preparado para apostar?</p>
+    </div>
+</div> {% endcomment %}
+
 <div id="main" class="container">
     <h1>TRIVIA</h1>
 
@@ -58,9 +65,9 @@
         {% endif %}
 
 
-        <div>
+        {% comment %} <div>
             <a href="{% url 'chat_room' %}">Entrar al chat</a>
-        </div>
+        </div> {% endcomment %}
 </div>
 
 <div id="loading" class="hide">
@@ -70,7 +77,6 @@
         <h3>antes de ver la pregunta debes colocar una apuesta</h3>
         <h3>si el tiempo se termina la pregunta se considera incorrecta</h3>
     </div>
-    
 
     <div class="ring">
         Loading

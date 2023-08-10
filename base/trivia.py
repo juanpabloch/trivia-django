@@ -75,3 +75,7 @@ def get_dificulty(points):
         return DIFFICULTY_MEDIUM_HARD
     elif points > 3000:
         return DIFFICULTY_HARD
+    
+    
+def response_process():
+    pass
