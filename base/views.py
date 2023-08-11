@@ -251,7 +251,6 @@ def room(request, room_name):
 # TODO: refactorizar codigo + OPP
 # TODO: pantalla inicial
 # TODO: sistema de email para pedir recarga de puntos falta armar email
-# TODO: traduccion
 # TODO: premios a la racha 5 seguidas 10 seguidas 20 seguidas 30 seguidas
 # TODO: implementar desafio, django channels juego online
 # TODO: crear base de datos para guardar amigos

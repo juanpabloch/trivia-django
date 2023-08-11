@@ -82,6 +82,19 @@ body{
   width: 100%;
 }
 
+.login p{
+  color: #000000;
+}
+
+.login p > a{
+  color: #ebebeb;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.login p > a:hover{
+  color: #ffff;
+}
 /*  */
 
 #loading-game{
@@ -290,11 +303,11 @@ span.answer-eng{
 
 
 .easy{
-  color: #6ab068;
+  color: #29d05e;
 }
 
 .medium{
-  color: #6e6807;
+  color: #ded752;
 }
 
 .hard{

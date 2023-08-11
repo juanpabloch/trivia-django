@@ -7,14 +7,14 @@
         <h1>Preguntas</h1>
         
         <h2>Ranking: {{request.user.get_ranking}}</h2>
-        <h2>Puntos: {{request.user.points}}</h2>
+        <h2>Points: {{request.user.points}}</h2>
         
         <div class="countdown-box">
             <h1>Start!</h1>
         </div>
 
         <div class="title">
-            <h2 class="{{question.difficulty}}">{{question.category|translate}}</h2>
+            <h2 class="{{question.difficulty}}">{{question.category}}</h2>
         </div>
         {% comment %} <form action="{% url 'questions_form' %}" method="post"> {% endcomment %}
         <form action="" method="post">
@@ -23,14 +23,13 @@
             <div class="card-container hide">
                 <div class="card">
                     <div class="card-header">
-                        {{question.question|translate|safe}}
-                        <p class="question">{{question.question|safe}}</p>
+                        {{question.question|safe}}
                     </div>
                     <div class="card-body">
                         {% for answer in question.answers %}
                         <div>
                             <input type="radio" id="answer{{forloop.counter}}" name="answer" value="{{answer}}" required>
-                            <label for="answer{{forloop.counter}}">{{answer|translate|safe}} - <span class="answer-eng">({{answer|safe}})</span></label>
+                            <label for="answer{{forloop.counter}}">{{answer|safe}}</label>
                         </div>
                         {% endfor %}
                     </div>
@@ -61,16 +60,15 @@
 
     <div class="container-result hide">
         <div class="result correct hide">
-            <h1>¡Correcto!</h1>
-            <p class="points">Ganaste: <span></span> puntos</p>
+            <h1>Correct!</h1>
+            <p class="points">You win: <span></span> points</p>
         </div>
 
         <div class="result incorrect hide">
-            <h1>¡Incorrecto!</h1>
+            <h1>Wrong!</h1>
             <p>the correct answer is:</p>
             <p class="correct_a"></p>
-            <p class="correct_a_trans"></p>
-            <p class="points">Perdiste: <span></span> puntos</p>
+            <p class="points">You loose: <span></span> points</p>
         </div>
     </div>
 
