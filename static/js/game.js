@@ -58,9 +58,11 @@ window.addEventListener('load', function(e){
                         }else{
                             incorrectCard.classList.remove('hide')
                             incorrectCard.querySelector('.correct_a').textContent = data.responseJSON.correct_a
-                            incorrectCard.querySelector('.correct_a_trans').textContent = data.responseJSON.correct_a_trans
                         }
-                        form.submit()
+
+                        setTimeout(function () {
+                            form.submit()
+                        }, 3000)
                     } else {
                         console.log("Error");
                         window.location.replace(url_home);

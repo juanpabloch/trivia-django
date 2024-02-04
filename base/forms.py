@@ -52,8 +52,3 @@ class LoginForm(forms.Form):
             "class": "form-control"
         }
     ))
-    
-
-class OptionsForm(forms.Form):
-    category = forms.ChoiceField(choices=utils.get_categories(), label='Categoria')
-    difficulty = forms.ChoiceField(choices=utils.get_difficulty(), label='Dificultad')

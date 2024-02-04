@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
 from base import forms
-from base import models
 
 from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
@@ -9,7 +8,6 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.core.exceptions import EmptyResultSet
 
-from django.core.mail import EmailMessage, get_connection
 from trivia import settings
 
 from email.mime.text import MIMEText
@@ -76,7 +74,7 @@ def logout(request):
 
 
 def home(request):
-    top_ten = models.CustomUser.objects.all().order_by('-points')[:10]
+    top_ten = UserModel.objects.all().order_by('-points')[:10]
     context = {
         "player" : request.user,
         "top_ten" : top_ten
@@ -90,7 +88,8 @@ def game_view(request):
     
     if score_redirect(request):
         return redirect('home')
-    
+
+    # POST
     if request.method == "POST":
         question = request.session.get('questions')
         user = request.user
@@ -103,15 +102,16 @@ def game_view(request):
             user.add_correctly()
         else:   
             user.subtract_points(int(request.POST.get('bet')))
-
+    # -----------------
     question = {}
 
     while not question.get('question'):
         try:
             question = trivia.get_question('https://opentdb.com/api.php', request.user) 
-        except (request.HTTPError, request.ConnectionError):
+        except Exception as err:
             logger.error('No connection to the API', exc_info=True)
-            continue
+            print("ERROR: ", err)
+            break
         
     if not question:
         raise EmptyResultSet("No question found, please try again later")
@@ -154,7 +154,7 @@ def questions_form(request):
 
 def players_rankings(request):
     try:
-        ranking = models.CustomUser.objects.all().order_by('-points')
+        ranking = UserModel.objects.all().order_by('-points')
     except Exception as e:
         logger.error(f'Error getting players ranking: {e}', exc_info=True)
     
@@ -180,7 +180,7 @@ def wrong_answer(request):
 
 def get_points_request(request):
     if request.method == 'POST':
-        user = models.CustomUser.objects.filter(id=request.user.id).first()
+        user = UserModel.objects.filter(id=request.user.id).first()
         token = str(uuid.uuid4())
         requested = datetime.now()
         user.request_points_key = token
@@ -220,7 +220,7 @@ def get_points_request(request):
 
 def redeem_points(request):
     if request.GET.get('key'):
-        user = models.CustomUser.objects.filter(request_points_key=request.GET.get('key'))
+        user = UserModel.objects.filter(request_points_key=request.GET.get('key'))
         if user:
             user.update(points=500, request_points_key='', request_points_requested='')
 
@@ -251,7 +251,6 @@ def room(request, room_name):
 # TODO: refactorizar codigo + OPP
 # TODO: pantalla inicial
 # TODO: sistema de email para pedir recarga de puntos falta armar email
-# TODO: traduccion
 # TODO: premios a la racha 5 seguidas 10 seguidas 20 seguidas 30 seguidas
 # TODO: implementar desafio, django channels juego online
 # TODO: crear base de datos para guardar amigos

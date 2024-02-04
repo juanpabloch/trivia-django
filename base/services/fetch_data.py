@@ -32,9 +32,7 @@ class FetchTriviaData():
         self.category = ''
     
     def get_data(self):
-        categories = models.Category.objects.all()
-        self.category = random.choice(categories)
-        url = self.url + f'&category={self.category.number}' + f'&difficulty={random.choice(DIFFICULTY)}'
+        url = self.url + f'&difficulty={random.choice(DIFFICULTY)}'
         response_api = requests.get(url)
         data = json.loads(response_api.text)
         return data
@@ -65,9 +63,7 @@ class Game():
         self.category = ''
     
     def get_data(self):
-        categories = models.Category.objects.all()
-        self.category = random.choice(categories)
-        url = self.url + f'&category={self.category.number}' + f'&difficulty={random.choice(DIFFICULTY)}'
+        url = self.url + f'&difficulty={random.choice(DIFFICULTY)}'
         response_api = requests.get(url)
         data = json.loads(response_api.text)
         return data
@@ -75,7 +71,7 @@ class Game():
     def get_question(self):
         data = self.get_data()
         new_result = {}
-        for i, question in enumerate(data["results"]):
+        for question in data["results"]:
             new_result["question"] = question['question']
             new_result["correct_answer"] = question["correct_answer"]
             new_result["answers"] = question["incorrect_answers"]
