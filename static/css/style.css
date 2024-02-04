@@ -106,7 +106,7 @@ body{
 }
 
 .container{
-    overflow: hidden;
+    /* overflow: hidden; */
     height: 100vh;
 }
 

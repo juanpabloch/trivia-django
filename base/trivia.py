@@ -2,7 +2,7 @@ import requests
 import json
 import random
 import math
-from base import models
+
 
 DIFFICULTY = ["easy", "medium", "hard"]
 DIFFICULTY_EASY = ["easy"]
@@ -13,9 +13,7 @@ DIFFICULTY_HARD = ["hard"]
 
 
 def get_data(api, points):
-        categories = models.Category.objects.all()
-        category = random.choice(categories)
-        url = api + f'?amount=1' + f'&category={category.number}' + f'&difficulty={random.choice(get_dificulty(points))}'
+        url = api + f'?amount=1' + f'&difficulty={random.choice(get_dificulty(points))}'
         response_api = requests.get(url)
         data = json.loads(response_api.text)
         return data
@@ -24,7 +22,7 @@ def get_data(api, points):
 def get_question(api, user):
         data = get_data(api, user.points)
         new_result = {}
-        for i, question in enumerate(data["results"]):
+        for question in data["results"]:
             new_result["question"] = question['question']
             new_result["correct_answer"] = question["correct_answer"]
             new_result["answers"] = question["incorrect_answers"]

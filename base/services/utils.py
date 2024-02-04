@@ -1,11 +1,6 @@
 from base import models
 from datetime import datetime
 
-def get_categories():
-    cate = models.Category.objects.all().values()
-    categories = tuple( (item["number"], item["name"]) for item in cate )
-    return categories
-
 
 def get_difficulty():
     difficulty = (
